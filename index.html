@@ -1,0 +1,1161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>1 Rep Max Calculator — USA Triathlon</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow+Condensed:wght@400;500;600;700&family=Source+Sans+3:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --usa-red: #E31837;
+    --usa-navy: #0C2340;
+    --bright-red: #CE1141;
+    --dark-blue: #13294B;
+    --steel-blue: #4B7C9B;
+    --light-gray: #D6D6D6;
+    --white: #FFFFFF;
+    --charcoal: #3E3E3E;
+    --bg-light: #F4F6F8;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Source Sans 3', sans-serif;
+    background: var(--bg-light);
+    color: var(--charcoal);
+    min-height: 100vh;
+  }
+
+  /* ── BANNER ── */
+  .banner {
+    background: linear-gradient(135deg, var(--usa-navy) 0%, var(--dark-blue) 60%, #1a3a5c 100%);
+    padding: 0;
+    display: flex;
+    align-items: stretch;
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.25);
+  }
+  .banner::after {
+    content: '';
+    position: absolute;
+    right: -60px;
+    top: -60px;
+    width: 280px;
+    height: 280px;
+    background: radial-gradient(circle, rgba(227,24,55,0.12) 0%, transparent 70%);
+    pointer-events: none;
+  }
+
+  .banner-logo {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 16px 24px;
+    background: rgba(255,255,255,0.06);
+    border-right: 1px solid rgba(255,255,255,0.08);
+    min-width: 80px;
+    flex-shrink: 0;
+  }
+  .banner-logo img {
+    height: 56px;
+    width: auto;
+    display: block;
+  }
+  /* Placeholder SVG logo */
+  .logo-placeholder {
+    width: 56px;
+    height: 56px;
+    flex-shrink: 0;
+  }
+
+  .banner-text {
+    padding: 20px 28px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 2px;
+    position: relative;
+    z-index: 1;
+  }
+  .banner-text h1 {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(1.6rem, 4vw, 2.2rem);
+    color: var(--white);
+    letter-spacing: 2px;
+    line-height: 1.1;
+  }
+  .banner-text h1 span {
+    color: var(--usa-red);
+  }
+  .banner-text p {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 0.95rem;
+    color: rgba(255,255,255,0.55);
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    font-weight: 500;
+  }
+
+  /* ── RED ACCENT BAR ── */
+  .accent-bar {
+    height: 4px;
+    background: linear-gradient(90deg, var(--usa-red), var(--bright-red), var(--usa-red));
+  }
+
+  /* ── MAIN CONTAINER ── */
+  .container {
+    max-width: 720px;
+    margin: 0 auto;
+    padding: 32px 20px 24px;
+  }
+
+  /* ── INTRO ── */
+  .intro {
+    text-align: center;
+    margin-bottom: 28px;
+  }
+  .intro p {
+    font-size: 1.02rem;
+    line-height: 1.65;
+    color: #5a5a5a;
+    max-width: 560px;
+    margin: 0 auto;
+  }
+
+  /* ── INPUT CARD ── */
+  .input-card {
+    background: var(--white);
+    border-radius: 12px;
+    padding: 28px 32px 24px;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+    border: 1px solid rgba(0,0,0,0.05);
+    margin-bottom: 24px;
+  }
+  .input-card h2 {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 700;
+    font-size: 1.05rem;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    color: var(--usa-navy);
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .input-card h2::before {
+    content: '';
+    width: 4px;
+    height: 18px;
+    background: var(--usa-red);
+    border-radius: 2px;
+    flex-shrink: 0;
+  }
+
+  .input-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr auto;
+    gap: 16px;
+    align-items: end;
+  }
+  @media (max-width: 520px) {
+    .input-row { grid-template-columns: 1fr; }
+  }
+
+  .field label {
+    display: block;
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 600;
+    font-size: 0.82rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: #777;
+    margin-bottom: 6px;
+  }
+  .field input, .field select {
+    width: 100%;
+    padding: 12px 14px;
+    font-family: 'Source Sans 3', sans-serif;
+    font-size: 1.15rem;
+    font-weight: 600;
+    color: var(--usa-navy);
+    border: 2px solid var(--light-gray);
+    border-radius: 8px;
+    background: var(--bg-light);
+    transition: border-color 0.2s, box-shadow 0.2s;
+    outline: none;
+    -moz-appearance: textfield;
+  }
+  .field input::-webkit-outer-spin-button,
+  .field input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
+  .field input:focus, .field select:focus {
+    border-color: var(--steel-blue);
+    box-shadow: 0 0 0 3px rgba(75,124,155,0.15);
+  }
+
+  .calc-btn {
+    padding: 12px 28px;
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1.15rem;
+    letter-spacing: 2px;
+    color: var(--white);
+    background: linear-gradient(135deg, var(--usa-red), var(--bright-red));
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: transform 0.15s, box-shadow 0.15s;
+    white-space: nowrap;
+    height: 48px;
+  }
+  .calc-btn:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 14px rgba(227,24,55,0.35);
+  }
+  .calc-btn:active { transform: translateY(0); }
+
+  /* ── RESULT HERO ── */
+  .result-hero {
+    background: linear-gradient(135deg, var(--usa-navy), var(--dark-blue));
+    border-radius: 12px;
+    padding: 28px 32px;
+    text-align: center;
+    margin-bottom: 24px;
+    opacity: 0;
+    transform: translateY(10px);
+    transition: opacity 0.4s, transform 0.4s;
+    position: relative;
+    overflow: hidden;
+  }
+  .result-hero.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  .result-hero::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, var(--usa-red), var(--bright-red), var(--usa-red));
+  }
+  .result-label {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 0.85rem;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.5);
+    margin-bottom: 4px;
+  }
+  .result-value {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(2.8rem, 8vw, 4rem);
+    color: var(--white);
+    line-height: 1;
+    margin-bottom: 2px;
+  }
+  .result-value .unit {
+    font-size: 0.45em;
+    color: rgba(255,255,255,0.45);
+    margin-left: 4px;
+  }
+  .result-formula {
+    font-family: 'Source Sans 3', sans-serif;
+    font-size: 0.82rem;
+    color: rgba(255,255,255,0.35);
+    margin-top: 8px;
+  }
+
+  /* ── PERCENTAGE TABLE ── */
+  .table-card {
+    background: var(--white);
+    border-radius: 12px;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+    border: 1px solid rgba(0,0,0,0.05);
+    overflow: hidden;
+    margin-bottom: 24px;
+    opacity: 0;
+    transform: translateY(10px);
+    transition: opacity 0.4s 0.15s, transform 0.4s 0.15s;
+  }
+  .table-card.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  .table-card h2 {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 700;
+    font-size: 1.05rem;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    color: var(--usa-navy);
+    padding: 20px 28px 14px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .table-card h2::before {
+    content: '';
+    width: 4px;
+    height: 18px;
+    background: var(--usa-red);
+    border-radius: 2px;
+    flex-shrink: 0;
+  }
+
+  .pct-table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+  .pct-table thead th {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 600;
+    font-size: 0.78rem;
+    text-transform: uppercase;
+    letter-spacing: 1.2px;
+    color: #999;
+    padding: 0 28px 10px;
+    text-align: left;
+    border-bottom: 2px solid var(--light-gray);
+  }
+  .pct-table thead th:last-child { text-align: right; }
+  .pct-table thead th:nth-child(2) { text-align: center; }
+
+  .pct-table tbody tr {
+    transition: background 0.15s;
+    cursor: default;
+  }
+  .pct-table tbody tr:hover {
+    background: rgba(75,124,155,0.06);
+  }
+  .pct-table tbody tr.highlight {
+    background: rgba(227,24,55,0.06);
+  }
+  .pct-table tbody td {
+    padding: 11px 28px;
+    font-size: 0.98rem;
+    border-bottom: 1px solid #f0f0f0;
+    font-weight: 500;
+  }
+  .pct-table tbody td:first-child {
+    font-weight: 700;
+    color: var(--usa-navy);
+  }
+  .pct-table tbody td:nth-child(2) {
+    text-align: center;
+    color: #888;
+  }
+  .pct-table tbody td:last-child {
+    text-align: right;
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 700;
+    font-size: 1.05rem;
+    color: var(--usa-navy);
+  }
+
+  .pct-bar-cell {
+    position: relative;
+  }
+  .pct-bar {
+    position: absolute;
+    left: 0; top: 0; bottom: 0;
+    background: linear-gradient(90deg, rgba(75,124,155,0.10), rgba(75,124,155,0.04));
+    border-radius: 0 4px 4px 0;
+    transition: width 0.6s cubic-bezier(0.22, 1, 0.36, 1);
+    width: 0;
+  }
+  .pct-bar-cell span { position: relative; z-index: 1; }
+
+  /* ── TRAINING ZONES ── */
+  .zones-card {
+    background: var(--white);
+    border-radius: 12px;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+    border: 1px solid rgba(0,0,0,0.05);
+    overflow: hidden;
+    margin-bottom: 24px;
+    opacity: 0;
+    transform: translateY(10px);
+    transition: opacity 0.4s 0.2s, transform 0.4s 0.2s;
+  }
+  .zones-card.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  .zones-card h2 {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 700;
+    font-size: 1.05rem;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    color: var(--usa-navy);
+    padding: 20px 28px 6px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .zones-card h2::before {
+    content: '';
+    width: 4px;
+    height: 18px;
+    background: var(--usa-red);
+    border-radius: 2px;
+    flex-shrink: 0;
+  }
+  .zones-card .zones-intro {
+    font-size: 0.88rem;
+    color: #888;
+    padding: 0 28px 16px;
+    line-height: 1.5;
+  }
+
+  .zone {
+    border-top: 1px solid #f0f0f0;
+    overflow: hidden;
+  }
+  .zone-header {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 16px 28px;
+    cursor: pointer;
+    transition: background 0.15s;
+    user-select: none;
+  }
+  .zone-header:hover { background: rgba(75,124,155,0.04); }
+
+  .zone-color {
+    width: 6px;
+    height: 42px;
+    border-radius: 3px;
+    flex-shrink: 0;
+  }
+  .zone-color.z-power   { background: var(--usa-red); }
+  .zone-color.z-strength { background: var(--bright-red); }
+  .zone-color.z-hyper    { background: var(--steel-blue); }
+  .zone-color.z-endure   { background: var(--usa-navy); }
+
+  .zone-title-block { flex: 1; }
+  .zone-name {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 700;
+    font-size: 1rem;
+    color: var(--usa-navy);
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    line-height: 1.2;
+  }
+  .zone-range {
+    font-family: 'Source Sans 3', sans-serif;
+    font-size: 0.82rem;
+    color: #999;
+    margin-top: 1px;
+  }
+
+  .zone-chevron {
+    width: 20px;
+    height: 20px;
+    flex-shrink: 0;
+    transition: transform 0.25s;
+    color: #ccc;
+  }
+  .zone.open .zone-chevron {
+    transform: rotate(180deg);
+    color: var(--steel-blue);
+  }
+
+  .zone-body {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.35s cubic-bezier(0.22, 1, 0.36, 1), padding 0.25s;
+    padding: 0 28px 0 48px;
+  }
+  .zone.open .zone-body {
+    max-height: 600px;
+    padding: 0 28px 20px 48px;
+  }
+
+  .zone-body p {
+    font-size: 0.9rem;
+    line-height: 1.65;
+    color: var(--charcoal);
+    margin-bottom: 10px;
+  }
+  .zone-body p:last-child { margin-bottom: 0; }
+
+  .zone-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-top: 10px;
+  }
+  .zone-tag {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    padding: 4px 10px;
+    border-radius: 4px;
+    background: var(--bg-light);
+    color: #666;
+  }
+
+  /* ── CHART ── */
+  .chart-card {
+    background: var(--white);
+    border-radius: 12px;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+    border: 1px solid rgba(0,0,0,0.05);
+    padding: 24px 28px 20px;
+    margin-bottom: 28px;
+    opacity: 0;
+    transform: translateY(10px);
+    transition: opacity 0.4s 0.25s, transform 0.4s 0.25s;
+  }
+  .chart-card.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  .chart-card h2 {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 700;
+    font-size: 1.05rem;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    color: var(--usa-navy);
+    margin-bottom: 16px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .chart-card h2::before {
+    content: '';
+    width: 4px;
+    height: 18px;
+    background: var(--usa-red);
+    border-radius: 2px;
+    flex-shrink: 0;
+  }
+  .chart-area {
+    position: relative;
+    width: 100%;
+    height: 220px;
+  }
+  .chart-area svg { width: 100%; height: 100%; }
+
+  /* ── DISCLAIMER ── */
+  .disclaimer {
+    background: var(--white);
+    border-radius: 12px;
+    padding: 22px 28px;
+    border-left: 4px solid var(--steel-blue);
+    box-shadow: 0 2px 12px rgba(0,0,0,0.04);
+    margin-bottom: 20px;
+  }
+  .disclaimer h3 {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 700;
+    font-size: 0.88rem;
+    text-transform: uppercase;
+    letter-spacing: 1.2px;
+    color: var(--steel-blue);
+    margin-bottom: 8px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .disclaimer p {
+    font-size: 0.85rem;
+    line-height: 1.6;
+    color: #777;
+  }
+
+  /* ── FOOTER ── */
+  .footer {
+    text-align: center;
+    padding: 16px 20px 28px;
+    font-size: 0.78rem;
+    color: #aaa;
+    font-family: 'Barlow Condensed', sans-serif;
+    letter-spacing: 0.8px;
+  }
+
+  /* ── PRINT BUTTON ── */
+  .print-btn {
+    display: none;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    margin: 0 auto 28px;
+    padding: 12px 32px;
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1.1rem;
+    letter-spacing: 2px;
+    color: var(--usa-navy);
+    background: var(--white);
+    border: 2px solid var(--usa-navy);
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background 0.2s, color 0.2s, transform 0.15s;
+  }
+  .print-btn.visible { display: flex; }
+  .print-btn:hover {
+    background: var(--usa-navy);
+    color: var(--white);
+    transform: translateY(-1px);
+  }
+  .print-btn svg { transition: fill 0.2s; }
+  .print-btn:hover svg { fill: var(--white); }
+
+  /* ── PRINT SUMMARY (hidden on screen) ── */
+  .print-summary {
+    display: none;
+  }
+
+  /* ══════════════════════════════════════════
+     PRINT STYLES
+     ══════════════════════════════════════════ */
+  @media print {
+    * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; color-adjust: exact !important; }
+
+    body {
+      background: white !important;
+      font-size: 11pt;
+    }
+
+    /* Hide interactive-only elements */
+    .input-card,
+    .intro,
+    .print-btn,
+    .chart-card {
+      display: none !important;
+    }
+
+    /* Show print summary */
+    .print-summary {
+      display: block !important;
+      background: #f4f6f8 !important;
+      border: 1.5pt solid #d6d6d6;
+      border-radius: 6pt;
+      padding: 14pt 20pt;
+      margin-bottom: 16pt;
+      text-align: center;
+    }
+    .print-summary .ps-label {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 8pt;
+      text-transform: uppercase;
+      letter-spacing: 1.5pt;
+      color: #999;
+      margin-bottom: 2pt;
+    }
+    .print-summary .ps-row {
+      display: flex;
+      justify-content: center;
+      gap: 32pt;
+      margin-top: 6pt;
+    }
+    .print-summary .ps-item {
+      text-align: center;
+    }
+    .print-summary .ps-item .ps-val {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 18pt;
+      color: #0C2340;
+      line-height: 1.1;
+    }
+    .print-summary .ps-item .ps-cap {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 7.5pt;
+      text-transform: uppercase;
+      letter-spacing: 1pt;
+      color: #888;
+    }
+
+    /* Banner: keep but flatten */
+    .banner {
+      box-shadow: none !important;
+      background: #0C2340 !important;
+    }
+    .banner::after { display: none; }
+    .accent-bar {
+      background: #E31837 !important;
+      height: 3pt !important;
+    }
+
+    /* Container */
+    .container {
+      max-width: 100%;
+      padding: 16pt 12pt 0;
+    }
+
+    /* Result hero */
+    .result-hero {
+      opacity: 1 !important;
+      transform: none !important;
+      background: #0C2340 !important;
+      border-radius: 6pt;
+      padding: 16pt 20pt;
+      margin-bottom: 16pt;
+      page-break-inside: avoid;
+    }
+    .result-hero::before {
+      background: #E31837 !important;
+    }
+    .result-value {
+      font-size: 28pt !important;
+    }
+
+    /* Table card */
+    .table-card {
+      opacity: 1 !important;
+      transform: none !important;
+      box-shadow: none !important;
+      border: 1.5pt solid #d6d6d6;
+      border-radius: 6pt;
+      page-break-inside: avoid;
+      margin-bottom: 16pt;
+    }
+    .pct-table tbody tr:hover { background: transparent !important; }
+    .pct-table tbody tr.highlight { background: rgba(227,24,55,0.08) !important; }
+    .pct-bar { display: none !important; }
+    .pct-table tbody td { padding: 7pt 20pt; font-size: 10pt; }
+    .pct-table thead th { padding: 0 20pt 7pt; font-size: 7.5pt; }
+
+    /* Disclaimer */
+    .disclaimer {
+      box-shadow: none !important;
+      border: 1pt solid #d6d6d6;
+      border-left: 3pt solid #4B7C9B;
+      border-radius: 4pt;
+      padding: 14pt 18pt;
+      page-break-inside: avoid;
+    }
+
+    /* Training Zones */
+    .zones-card {
+      opacity: 1 !important;
+      transform: none !important;
+      box-shadow: none !important;
+      border: 1.5pt solid #d6d6d6;
+      border-radius: 6pt;
+      margin-bottom: 16pt;
+    }
+    .zone {
+      page-break-inside: avoid;
+    }
+    .zone .zone-body {
+      max-height: none !important;
+      padding: 0 18pt 12pt 36pt !important;
+      overflow: visible !important;
+    }
+    .zone-chevron { display: none !important; }
+    .zone-header { padding: 10pt 18pt; }
+    .zone-body p { font-size: 9pt; line-height: 1.5; }
+    .zone-tags { margin-top: 6pt; }
+    .zone-tag { font-size: 7pt; padding: 2pt 6pt; }
+
+    /* Footer */
+    .footer {
+      padding: 10pt 0 4pt;
+      font-size: 7pt;
+      border-top: 0.5pt solid #e0e0e0;
+      margin-top: 8pt;
+    }
+  }
+</style>
+</head>
+<body>
+
+<!-- ═══ BANNER ═══ -->
+<div class="banner">
+  <div class="banner-logo">
+    <!-- REPLACE: swap this SVG with an <img src="your-logo.png"> tag -->
+    <svg class="logo-placeholder" viewBox="0 0 56 56" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <rect x="2" y="2" width="52" height="52" rx="8" stroke="rgba(255,255,255,0.25)" stroke-width="1.5" fill="none"/>
+      <path d="M18 38V18h5l5 10 5-10h5v20h-4.5V26l-4 8h-3l-4-8v12z" fill="white" opacity="0.9"/>
+    </svg>
+  </div>
+  <div class="banner-text">
+    <h1>1 Rep Max <span>Calculator</span></h1>
+    <p>USA Triathlon — Strength Training Tool</p>
+  </div>
+</div>
+<div class="accent-bar"></div>
+
+<!-- ═══ MAIN ═══ -->
+<div class="container">
+
+  <div class="intro">
+    <p>Enter the weight you lifted and the number of repetitions completed. This tool estimates your one-repetition maximum (1RM) and provides a training load table based on standard percentages.</p>
+  </div>
+
+  <!-- INPUT -->
+  <div class="input-card">
+    <h2>Enter Your Lift</h2>
+    <div class="input-row">
+      <div class="field">
+        <label>Weight Lifted</label>
+        <input type="number" id="weight" min="1" max="2000" step="0.5" placeholder="e.g. 135" aria-label="Weight Lifted">
+      </div>
+      <div class="field">
+        <label>Repetitions</label>
+        <input type="number" id="reps" min="1" max="30" step="1" placeholder="e.g. 5" aria-label="Repetitions">
+      </div>
+      <button class="calc-btn" onclick="calculate()" aria-label="Calculate 1RM">CALCULATE</button>
+    </div>
+  </div>
+
+  <!-- RESULT -->
+  <div class="result-hero" id="resultHero">
+    <div class="result-label">Estimated 1 Rep Max</div>
+    <div class="result-value" id="resultValue">—<span class="unit"></span></div>
+    <div class="result-formula">Lander Formula: 1RM = (100 × Weight) ÷ (101.3 − 2.67123 × Reps)</div>
+  </div>
+
+  <!-- PRINT SUMMARY (visible only when printing) -->
+  <div class="print-summary" id="printSummary">
+    <div class="ps-label">Calculation Input</div>
+    <div class="ps-row">
+      <div class="ps-item">
+        <div class="ps-val" id="psWeight">—</div>
+        <div class="ps-cap">Weight Lifted (lbs)</div>
+      </div>
+      <div class="ps-item">
+        <div class="ps-val" id="psReps">—</div>
+        <div class="ps-cap">Repetitions</div>
+      </div>
+      <div class="ps-item">
+        <div class="ps-val" id="psDate">—</div>
+        <div class="ps-cap">Date</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- TABLE -->
+  <div class="table-card" id="tableCard">
+    <h2>Training Load Table</h2>
+    <table class="pct-table">
+      <thead>
+        <tr>
+          <th>% of 1RM</th>
+          <th>Reps</th>
+          <th>Weight</th>
+        </tr>
+      </thead>
+      <tbody id="tableBody"></tbody>
+    </table>
+  </div>
+
+  <!-- TRAINING ZONES -->
+  <div class="zones-card" id="zonesCard">
+    <h2>Training Zone Benefits</h2>
+    <p class="zones-intro">Different repetition ranges produce distinct physiological adaptations. Click each zone to explore the science behind rep-based training.</p>
+
+    <!-- ZONE 1: Maximal Strength & Power -->
+    <div class="zone open" id="zone1">
+      <div class="zone-header" onclick="toggleZone('zone1')">
+        <div class="zone-color z-power"></div>
+        <div class="zone-title-block">
+          <div class="zone-name">Maximal Strength &amp; Power</div>
+          <div class="zone-range">1–3 Reps &nbsp;·&nbsp; 93–100% 1RM</div>
+        </div>
+        <svg class="zone-chevron" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M5 7.5L10 12.5L15 7.5"/></svg>
+      </div>
+      <div class="zone-body">
+        <p>Training at near-maximal loads primarily targets the <strong>central nervous system</strong> rather than muscle size. The key adaptations are neural: improved motor unit recruitment, increased firing rate (rate coding), and greater synchronization of motor units. Research shows that neural factors are especially important for strength gains at intensities above 85% of 1RM.</p>
+        <p>These loads require full recruitment of high-threshold Type II (fast-twitch) motor fibers, which generate the most force but fatigue rapidly. Over time, this trains the nervous system to activate a larger percentage of available muscle fibers simultaneously, directly increasing maximal force production and rate of force development — critical for explosive power.</p>
+        <p>This zone is also where the principle of <strong>specificity</strong> is strongest: training heavy directly improves your ability to lift heavy, a dose–response relationship that becomes more pronounced in experienced lifters.</p>
+        <div class="zone-tags">
+          <span class="zone-tag">Motor Unit Recruitment</span>
+          <span class="zone-tag">CNS Adaptation</span>
+          <span class="zone-tag">Rate of Force Development</span>
+          <span class="zone-tag">Type II Fiber Activation</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- ZONE 2: Strength -->
+    <div class="zone" id="zone2">
+      <div class="zone-header" onclick="toggleZone('zone2')">
+        <div class="zone-color z-strength"></div>
+        <div class="zone-title-block">
+          <div class="zone-name">Functional Strength</div>
+          <div class="zone-range">4–6 Reps &nbsp;·&nbsp; 85–90% 1RM</div>
+        </div>
+        <svg class="zone-chevron" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M5 7.5L10 12.5L15 7.5"/></svg>
+      </div>
+      <div class="zone-body">
+        <p>This range bridges maximal strength and hypertrophy, producing a blend of <strong>neural and structural adaptations</strong>. The loads are heavy enough to recruit high-threshold motor units and drive neuromuscular efficiency, while the slightly higher volume begins to create meaningful mechanical tension on muscle fibers — the primary driver of hypertrophy.</p>
+        <p>Research shows that multiple studies report greater 1RM improvements when training in the 1–5 rep range compared to higher rep zones. This zone builds the kind of strength that transfers to athletic performance: improved intramuscular coordination, reduced co-contraction of antagonist muscles, and increased stiffness of tendons and connective tissue.</p>
+        <p>For triathletes, this zone is particularly relevant for building <strong>force production capacity</strong> that supports swim stroke power, hill climbing on the bike, and running economy.</p>
+        <div class="zone-tags">
+          <span class="zone-tag">Neuromuscular Efficiency</span>
+          <span class="zone-tag">Mechanical Tension</span>
+          <span class="zone-tag">Connective Tissue Strength</span>
+          <span class="zone-tag">Athletic Transfer</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- ZONE 3: Hypertrophy -->
+    <div class="zone" id="zone3">
+      <div class="zone-header" onclick="toggleZone('zone3')">
+        <div class="zone-color z-hyper"></div>
+        <div class="zone-title-block">
+          <div class="zone-name">Hypertrophy (Muscle Growth)</div>
+          <div class="zone-range">7–10 Reps &nbsp;·&nbsp; 75–83% 1RM</div>
+        </div>
+        <svg class="zone-chevron" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M5 7.5L10 12.5L15 7.5"/></svg>
+      </div>
+      <div class="zone-body">
+        <p>The moderate-load zone optimizes <strong>muscle hypertrophy</strong> — the increase in muscle cross-sectional area. Three primary mechanisms drive this: mechanical tension from the load, metabolic stress from sustained contractions, and muscle damage that triggers repair and growth. Sets in this range typically last 30–60 seconds, accumulating metabolites (lactate, hydrogen ions) that contribute to the muscle-building signal.</p>
+        <p>This zone induces fiber-type transitions from Type IIx to Type IIa fibers, increases myofibrillar protein density, and elevates muscle protein synthesis for up to 48 hours post-exercise. The loads are heavy enough to recruit both Type I and Type II fibers while allowing sufficient training volume — a critical factor, since research shows that total volume is one of the strongest predictors of hypertrophy.</p>
+        <p>From a practical standpoint, this is the range that allows athletes to <strong>maximize productive training volume</strong> per session and per week without the excessive systemic fatigue that very heavy loads create.</p>
+        <div class="zone-tags">
+          <span class="zone-tag">Muscle Protein Synthesis</span>
+          <span class="zone-tag">Metabolic Stress</span>
+          <span class="zone-tag">Fiber Type IIx → IIa</span>
+          <span class="zone-tag">Volume Accumulation</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- ZONE 4: Muscular Endurance -->
+    <div class="zone" id="zone4">
+      <div class="zone-header" onclick="toggleZone('zone4')">
+        <div class="zone-color z-endure"></div>
+        <div class="zone-title-block">
+          <div class="zone-name">Muscular Endurance</div>
+          <div class="zone-range">12–15+ Reps &nbsp;·&nbsp; 65–67% 1RM</div>
+        </div>
+        <svg class="zone-chevron" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M5 7.5L10 12.5L15 7.5"/></svg>
+      </div>
+      <div class="zone-body">
+        <p>Higher-repetition training primarily develops <strong>local muscular endurance</strong> — the ability of a muscle to sustain repeated contractions over time. This zone preferentially stimulates Type I (slow-twitch) muscle fibers, which have high mitochondrial density and resist fatigue. Research by Campos et al. (2002) showed that only the high-rep group achieved significant improvements in aerobic power and time to exhaustion.</p>
+        <p>Key physiological adaptations include increased <strong>capillary density</strong> around trained muscles, greater oxidative enzyme activity, improved buffering capacity against metabolic byproducts, and enhanced glycogen storage. The extended time under tension also improves metabolic efficiency, allowing muscles to sustain work for longer periods before fatigue.</p>
+        <p>For endurance athletes, this zone directly supports the <strong>repetitive, sustained muscular demands</strong> of swimming, cycling, and running — building resistance to fatigue in the specific muscles used during competition while improving the local aerobic machinery that powers prolonged effort.</p>
+        <div class="zone-tags">
+          <span class="zone-tag">Capillary Density</span>
+          <span class="zone-tag">Oxidative Capacity</span>
+          <span class="zone-tag">Fatigue Resistance</span>
+          <span class="zone-tag">Type I Fiber Adaptation</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- CHART -->
+  <div class="chart-card" id="chartCard">
+    <h2>Load Distribution</h2>
+    <div class="chart-area" id="chartArea"></div>
+  </div>
+
+  <!-- PRINT BUTTON -->
+  <button class="print-btn" id="printBtn" onclick="window.print()">
+    <svg width="18" height="18" viewBox="0 0 18 18" fill="#0C2340" xmlns="http://www.w3.org/2000/svg">
+      <path d="M4.5 6.75V1.5h9v5.25M4.5 13.5H3a1.5 1.5 0 01-1.5-1.5V9A1.5 1.5 0 013 7.5h12A1.5 1.5 0 0116.5 9v3a1.5 1.5 0 01-1.5 1.5h-1.5"/>
+      <rect x="4.5" y="11.25" width="9" height="5.25" rx="0.5"/>
+    </svg>
+    PRINT RESULTS
+  </button>
+
+  <!-- DISCLAIMER -->
+  <div class="disclaimer">
+    <h3>
+      <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="7" stroke="#4B7C9B" stroke-width="1.5"/><path d="M8 4.5v4M8 10.5v.5" stroke="#4B7C9B" stroke-width="1.5" stroke-linecap="round"/></svg>
+      Disclaimer
+    </h3>
+    <p>This calculator provides an <strong>estimate</strong> of your one-repetition maximum based on the Lander formula. Actual 1RM values may vary based on individual biomechanics, fatigue level, exercise type, and training experience. This tool is intended for educational purposes only and should not replace professional coaching guidance. Always use a spotter and proper form when testing maximal lifts. Consult a qualified strength and conditioning professional or physician before beginning any new training program.</p>
+    <p style="margin-top: 8px;">Copyright Vanguard Endurance 2015©</p>
+  </div>
+
+  <div class="footer">USA TRIATHLON COACHING EDUCATION</div>
+</div>
+
+<script>
+const PCT_TABLE = [
+  { pct: 100, reps: 1 },
+  { pct: 95,  reps: 2 },
+  { pct: 93,  reps: 3 },
+  { pct: 90,  reps: 4 },
+  { pct: 87,  reps: 5 },
+  { pct: 85,  reps: 6 },
+  { pct: 83,  reps: 7 },
+  { pct: 80,  reps: 8 },
+  { pct: 77,  reps: 9 },
+  { pct: 75,  reps: 10 },
+  { pct: 67,  reps: 12 },
+  { pct: 65,  reps: 15 }
+];
+
+function calculate() {
+  const w = parseFloat(document.getElementById('weight').value);
+  const r = parseInt(document.getElementById('reps').value);
+
+  if (!w || w <= 0 || !r || r < 1) {
+    alert('Please enter a valid weight and repetition count.');
+    return;
+  }
+  if (r > 30) {
+    alert('For accuracy, please enter 30 or fewer repetitions.');
+    return;
+  }
+
+  // Lander Formula
+  const divisor = 101.3 - 2.67123 * r;
+  if (divisor <= 0) {
+    alert('The repetition count is too high for an accurate estimate.');
+    return;
+  }
+  const oneRM = (100 * w) / divisor;
+
+  // Show result
+  const hero = document.getElementById('resultHero');
+  document.getElementById('resultValue').innerHTML =
+    oneRM.toFixed(1) + '<span class="unit">lbs</span>';
+  hero.classList.add('visible');
+
+  // Populate print summary
+  document.getElementById('psWeight').textContent = w;
+  document.getElementById('psReps').textContent = r;
+  document.getElementById('psDate').textContent = new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+
+  // Show print button
+  document.getElementById('printBtn').classList.add('visible');
+
+  // Build table
+  const tbody = document.getElementById('tableBody');
+  tbody.innerHTML = '';
+  PCT_TABLE.forEach((row, i) => {
+    const load = (oneRM * row.pct / 100);
+    const tr = document.createElement('tr');
+    if (row.pct === 100) tr.classList.add('highlight');
+    tr.innerHTML = `
+      <td class="pct-bar-cell">
+        <div class="pct-bar" style="width:0%"></div>
+        <span>${row.pct}%</span>
+      </td>
+      <td>${row.reps}</td>
+      <td>${load.toFixed(1)}</td>`;
+    tbody.appendChild(tr);
+    // animate bar
+    requestAnimationFrame(() => {
+      setTimeout(() => {
+        tr.querySelector('.pct-bar').style.width = row.pct + '%';
+      }, 60 + i * 50);
+    });
+  });
+
+  document.getElementById('tableCard').classList.add('visible');
+
+  // Show training zones
+  document.getElementById('zonesCard').classList.add('visible');
+
+  // Build chart
+  buildChart(oneRM);
+  document.getElementById('chartCard').classList.add('visible');
+}
+
+function buildChart(oneRM) {
+  const area = document.getElementById('chartArea');
+  const W = area.clientWidth;
+  const H = area.clientHeight;
+  const pad = { top: 20, right: 20, bottom: 36, left: 50 };
+  const cW = W - pad.left - pad.right;
+  const cH = H - pad.top - pad.bottom;
+
+  const data = PCT_TABLE.map(r => ({
+    reps: r.reps,
+    weight: oneRM * r.pct / 100,
+    pct: r.pct
+  }));
+
+  const maxW = oneRM * 1.05;
+  const maxR = 16;
+
+  function x(reps) { return pad.left + (reps / maxR) * cW; }
+  function y(w) { return pad.top + cH - (w / maxW) * cH; }
+
+  // Build path
+  let pathD = '';
+  let areaD = '';
+  data.forEach((d, i) => {
+    const px = x(d.reps);
+    const py = y(d.weight);
+    pathD += (i === 0 ? 'M' : 'L') + px.toFixed(1) + ',' + py.toFixed(1) + ' ';
+    areaD += (i === 0 ? 'M' : 'L') + px.toFixed(1) + ',' + py.toFixed(1) + ' ';
+  });
+  const lastX = x(data[data.length - 1].reps);
+  const firstX = x(data[0].reps);
+  areaD += `L${lastX.toFixed(1)},${(pad.top + cH).toFixed(1)} L${firstX.toFixed(1)},${(pad.top + cH).toFixed(1)} Z`;
+
+  // Y-axis ticks
+  const ySteps = 5;
+  let yTicks = '';
+  for (let i = 0; i <= ySteps; i++) {
+    const val = (maxW / ySteps) * i;
+    const py = y(val);
+    yTicks += `<line x1="${pad.left}" y1="${py}" x2="${pad.left + cW}" y2="${py}" stroke="#eee" stroke-width="1"/>`;
+    yTicks += `<text x="${pad.left - 8}" y="${py + 4}" text-anchor="end" fill="#aaa" font-size="11" font-family="Barlow Condensed">${val.toFixed(0)}</text>`;
+  }
+
+  // X-axis labels
+  let xLabels = '';
+  [1, 3, 5, 8, 10, 12, 15].forEach(r => {
+    xLabels += `<text x="${x(r)}" y="${pad.top + cH + 22}" text-anchor="middle" fill="#aaa" font-size="11" font-family="Barlow Condensed">${r}</text>`;
+  });
+
+  // Dots
+  let dots = '';
+  data.forEach((d, i) => {
+    const px = x(d.reps);
+    const py = y(d.weight);
+    dots += `
+      <circle cx="${px}" cy="${py}" r="4.5" fill="#E31837" stroke="white" stroke-width="2" opacity="0" style="animation: dotIn 0.3s ${0.1 + i*0.05}s forwards;">
+        <title>${d.pct}% — ${d.reps} reps — ${d.weight.toFixed(1)} lbs</title>
+      </circle>`;
+  });
+
+  area.innerHTML = `
+    <svg viewBox="0 0 ${W} ${H}" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <linearGradient id="areaGrad" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stop-color="#E31837" stop-opacity="0.15"/>
+          <stop offset="100%" stop-color="#E31837" stop-opacity="0.01"/>
+        </linearGradient>
+        <style>
+          @keyframes dotIn { to { opacity: 1; } }
+          @keyframes drawLine {
+            from { stroke-dashoffset: 1000; }
+            to { stroke-dashoffset: 0; }
+          }
+        </style>
+      </defs>
+      ${yTicks}
+      ${xLabels}
+      <text x="${W/2}" y="${H - 2}" text-anchor="middle" fill="#bbb" font-size="11" font-family="Barlow Condensed" letter-spacing="1">REPETITIONS</text>
+      <path d="${areaD}" fill="url(#areaGrad)"/>
+      <path d="${pathD}" fill="none" stroke="#E31837" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"
+            stroke-dasharray="1000" stroke-dashoffset="1000" style="animation: drawLine 1.2s 0.1s ease-out forwards;"/>
+      ${dots}
+    </svg>`;
+}
+
+// Allow Enter key to trigger calculation
+document.querySelectorAll('input').forEach(inp => {
+  inp.addEventListener('keydown', e => { if (e.key === 'Enter') calculate(); });
+});
+
+// Toggle training zone accordion
+function toggleZone(id) {
+  const zone = document.getElementById(id);
+  zone.classList.toggle('open');
+}
+</script>
+</body>
+</html>
